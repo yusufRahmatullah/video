@@ -189,7 +189,32 @@ class GrayPipeline(Pipeline):
         if key != 'main':
             return {}
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        gray = cv.GaussianBlur(gray, (21, 21), 0)
+        # gray = cv.GaussianBlur(gray, (21, 21), 0)
         return {
             'gray': gray
+        }
+
+
+class SobelPipeline(Pipeline):
+    def __init__(self, out: bool=False, name: str='Sobel'):
+        super().__init__(
+            out=out, name=name, requires=['gray'], provides=['sobel']
+        )
+
+    def process(self, key: str, frame):
+        if key != 'gray':
+            return {}
+        grad_x = cv.Sobel(
+            frame, cv.CV_16S, 1, 0,
+            ksize=3, scale=1, delta=0, borderType=cv.BORDER_DEFAULT
+        )
+        grad_y = cv.Sobel(
+            frame, cv.CV_16S, 0, 1,
+            ksize=3, scale=1, delta=0, borderType=cv.BORDER_DEFAULT
+        )
+        abs_grad_x = cv.convertScaleAbs(grad_x)
+        abs_grad_y = cv.convertScaleAbs(grad_y)
+        grad = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
+        return {
+            'sobel': grad
         }

@@ -10,7 +10,8 @@ from pipeline import (
     FgMaskPipeline,
     FpsPipeline,
     GrayPipeline,
-    PipelineExecutor
+    PipelineExecutor,
+    SobelPipeline
 )
 
 VERSION = '0.1.0'
@@ -55,7 +56,7 @@ def parse_args():
     )
     args = parser.parse_args()
     print(f'Version {VERSION}')
-    quit(0)
+    # quit(0)
     return args
 
 
@@ -70,7 +71,8 @@ def main():
     executor = PipelineExecutor([
         GrayPipeline(out=True),
         FgMaskPipeline(out=True),
-        ContourPipeline(),
+        SobelPipeline(out=True),
+        ContourPipeline(out=True),
         CountourSavePipeline(
             throttle=int(args.throttle),
             save_raw=args.save_raw),
